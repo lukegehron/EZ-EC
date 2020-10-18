@@ -36,7 +36,7 @@ body{
   /* box-shadow:  10px 10px 12px -4px rgba(0,0,0,0.35); */
 }
 
-table {
+#app {
   display: flex;
 	/* float: right ; */
 
@@ -215,6 +215,9 @@ path:hover {
 			</div>
 			
 			<h2 style="color:#333; font-size: 20px; margin-top:80px;">Embodied Carbon made Eazy</h2>
+			<button id="myBtn">Design Opt 1</button>
+<button id="myBtn2"> Design Opt 2</button>
+<button id="myBtn3">Design Opt 3</button> 
 
 			<!-- <div id="app"> -->
   
@@ -393,18 +396,33 @@ path:hover {
 			<div class="tab">
 				<iframe src="https://dev-swarm.herokuapp.com/viewer/5f8c30db783c4a000488cec6" width="100%" height="600px"></iframe>
 			</div>
+
+			<!-- <input type="radio" name="tabs" id="myBtn">
+			<label for="tabthree">Building Designer</label> -->
+			<!-- <button id="myBtn">Try it</button>
+			-->
 			
 		</div>
 		
+		
 
 		<!-- <canvas id="c"></canvas> -->
+
 
 		
 		
 	
 	 
 		
-		<table id="app">
+		<!-- <table> -->
+			<!-- <tr> -->
+				<!-- <td colspan="4"> -->
+				
+<!-- </td>
+			</tr>
+		</table> -->
+			<table id="app">
+				
 			<tr style="	font-weight: bold;;">
 				<td style="width:5px"></td>
 				<td>Layer Name</td>
@@ -465,18 +483,37 @@ path:hover {
 					<!-- <img src="models/3dm/Pie.png" width="90%"> -->
 				</td>
 			</tr>
+			<tr >
+				<td colspan="4">
+							
+				</td>
+			</tr>
 			<tr style="height: 100px;">
 
 				<td colspan="4">
 				<!-- <button>UPLOAD RHINO MODEL</button> -->
-				<input type="file" id="file-selector" accept=".jpg, .jpeg, .png">
+				<input type="file" id="file-selector" accept=".3dm">
 				</td>
 			</tr>
 		</table>
 
 		
 
+<!-- <p><strong>Note:</strong> The addEventListener() method is not supported in Internet Explorer 8 and earlier versions.</p>
+
+<p id="demo"></p> -->
+
+
+
+	
+
+		
+
 		<script type="module">
+
+		
+
+
 
 			import * as THREE from '../build/three.module.js';
 
@@ -511,6 +548,12 @@ path:hover {
 
 				camera = new THREE.PerspectiveCamera( 30, container.clientWidth / container.clientHeight, 1, 1000 );
 				camera.position.set( -280, - 280, 310);
+
+				camera.layers.enable( 0 ); // enabled by default
+				camera.layers.enable( 1 );
+				// camera.layers.enable( 2 );
+
+				
 				
 
 				scene = new THREE.Scene();
@@ -541,34 +584,93 @@ path:hover {
 				const loader = new Rhino3dmLoader();
 				loader.setLibraryPath( 'jsm/libs/rhino3dm/' );
 
-				loader.load( 'models/3dm/RhinoTemplate5.3dm', function ( object ) {
-
+				loader.load( 'models/3dm/RhinoTemplate6.3dm', function ( object ) {
 					// sceneBox.setFromObject(object);
     // let boxHelper = new THREE.Box3Helper(sceneBox, 0x0000ff);
     // scene.add(boxHelper);
-
     // Name to identify rhino object node
     object.name = 'rhinoDoc';
-
 					object.children.map(child => {
       // Access attributes from the Rhino document
 			let col = child.userData.attributes.drawColor;
 			// console.log(child.userData.attributes.drawColor)
       let color = new THREE.Color(col.r/255, col.g/255, col.b/255);
-
       let mat = new THREE.MeshLambertMaterial( {
         color: color,
       } );
-        
         // Set mesh material
 				child.material = mat;
+				child.layers.set(1)
 		});
-      
-
+		object.traverse( function( obj) {
+					obj.layers.set(1);
+			} );
+					object.layers.set(1);
 					scene.add( object );
+					// initGUI( object.userData.layers );
+				
 					initGUI( object.userData.layers );
-
 				} );
+
+				loader.load( 'models/3dm/RhinoTemplate7.3dm', function ( object ) {
+					// sceneBox.setFromObject(object);
+    // let boxHelper = new THREE.Box3Helper(sceneBox, 0x0000ff);
+    // scene.add(boxHelper);
+    // Name to identify rhino object node
+    object.name = 'rhinoDoc1';
+					object.children.map(child => {
+      // Access attributes from the Rhino document
+			let col = child.userData.attributes.drawColor;
+			// console.log(child.userData.attributes.drawColor)
+      let color = new THREE.Color(col.r/255, col.g/255, col.b/255);
+      let mat = new THREE.MeshLambertMaterial( {
+        color: color,
+      } );
+        // Set mesh material
+				child.material = mat;
+				child.layers.set(2)
+				// scene.add(child)
+		});
+
+			object.traverse( function( obj) {
+					obj.layers.set(2);
+			} );
+					object.layers.set(2);
+					scene.add( object );
+					// initGUI( object.userData.layers );
+				} );
+
+				loader.load( 'models/3dm/RhinoTemplate8.3dm', function ( object ) {
+					// sceneBox.setFromObject(object);
+    // let boxHelper = new THREE.Box3Helper(sceneBox, 0x0000ff);
+    // scene.add(boxHelper);
+    // Name to identify rhino object node
+    object.name = 'rhinoDoc1';
+					object.children.map(child => {
+      // Access attributes from the Rhino document
+			let col = child.userData.attributes.drawColor;
+			// console.log(child.userData.attributes.drawColor)
+      let color = new THREE.Color(col.r/255, col.g/255, col.b/255);
+      let mat = new THREE.MeshLambertMaterial( {
+        color: color,
+      } );
+        // Set mesh material
+				child.material = mat;
+				child.layers.set(3)
+				// scene.add(child)
+		});
+
+			object.traverse( function( obj) {
+					obj.layers.set(3);
+			} );
+					object.layers.set(3);
+					scene.add( object );
+					// initGUI( object.userData.layers );
+				} );
+
+		
+
+				// camera.layers.disable(2);
 
 				// const width = window.innerWidth;
 				// const height = window.innerHeight;
@@ -583,7 +685,13 @@ path:hover {
 
 				window.addEventListener( 'resize', resize, false );
 
+				
+
 			}
+
+			
+
+			
 
 			function resize() {
 
@@ -672,7 +780,7 @@ path:hover {
 											var t = new THREE.Triangle(vector3Array[myFaceArray[0]],vector3Array[myFaceArray[1]],vector3Array[myFaceArray[2]]);
 											var area = t.getArea();
 											// console.log("hi")
-											console.log(area)
+											// console.log(area)
 											eachLayerArea += area;
 
 										}
@@ -709,7 +817,7 @@ path:hover {
 
 
 					layersControl.add( layer, 'visible' ).name( layer.name ).onChange( function ( val ) {
-						console.log("does this run?")
+						// console.log("does this run?")
 
 						const name = this.object.name;
 
@@ -750,6 +858,8 @@ path:hover {
 				console.log(allColors)
 			}
 
+
+
 			var app = new Vue({
   el: '#app',
   data: {
@@ -779,6 +889,34 @@ path:hover {
             return tot 
         }
 }})
+
+document.getElementById("myBtn").addEventListener("click", function() {
+		console.log("Hello World");
+
+					camera.layers.enable(1);
+					camera.layers.disable(2);
+					camera.layers.disable(3);
+					console.log("clicked")
+				});
+
+				document.getElementById("myBtn2").addEventListener("click", function() {
+		console.log("Hello World");
+
+					camera.layers.disable(1);
+					camera.layers.enable(2);
+					camera.layers.disable(3);
+					console.log("clicked")
+				});
+
+				document.getElementById("myBtn3").addEventListener("click", function() {
+		console.log("Hello World");
+
+					camera.layers.disable(1);
+					camera.layers.disable(2);
+					camera.layers.enable(3);
+					console.log("clicked")
+				});
+	
 
 
 
@@ -942,7 +1080,24 @@ console.log(allColors)
 	// 		 }, 2000);
 
 
+
+
 	
+	</script>
+
+<script>
+
+				document.getElementById("btn2").addEventListener("click", function() {
+					camera.layers.disable(1);
+					camera.layers.enable(2);
+					camera.layers.disable(3);
+				});
+	
+				document.getElementById("btn3").addEventListener("click", function() {
+					camera.layers.disable(1);
+					camera.layers.disable(2);
+					camera.layers.enable(3);
+				});
 	</script>
 
 
@@ -962,6 +1117,8 @@ console.log(allColors)
   reader.readAsDataURL(file);
 }
 		</script>
+
+
 
 	</body>
 </html>
