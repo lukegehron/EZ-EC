@@ -247,7 +247,96 @@ path:hover {
 
 			
 			 <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
-			 <script src="//d3js.org/d3.v3.min.js"></script>
+			 <!-- <script src="//d3js.org/d3.v3.min.js"></script> -->
+			 <script src="https://d3js.org/d3.v4.min.js"></script>
+			 <script src="https://unpkg.com/jeezy/lib/jeezy.min.js"></script>
+			 <script>
+				 let allLayers = [];
+
+				 let myGWPMaterials = [
+		{"material": "Granite",
+		"value":	18.28514101
+},{
+	"material": "Limestone",
+	"value":11.54573152
+},{
+	"material": "Brick",
+	"value":8.629073875
+},{
+	"material": "InsMetalPanel",
+	"value":9.171245913
+},{
+	"material": "Spandrel",
+	"value":15.90686277
+},{
+	"material": "UHPC",
+	"value":15.19133007
+},{
+	"material": "GFRC",
+	"value":14.88696287
+},{
+	"material": "ACM",
+	"value":11.07734591
+},{
+	"material": "Terracotta",
+	"value":8.107280922
+},{
+	"material": "PhenResin",
+	"value":8.364346902
+},{
+	"material": "FiberCement",
+	"value":8.046661497
+},{
+	"material": "Zinc",
+	"value":6.813886863
+},{
+	"material": "Granite1",
+	"value":6.532641113
+},{
+	"material": "Limestone1",
+	"value":8.107280922
+},{
+	"material": "Steel",
+	"value":4.78009599
+},{
+	"material": "Wood",
+	"value":5.322936027
+}	
+	];
+
+	let data = [];
+	let prev = 0;
+	let next = 0;
+				function getData(){
+					// next++;
+			
+			console.log("changing")
+			
+			for(let i = 0; i < allLayers.length; i++){
+				let cur = allLayers[i].variantId;
+			
+			
+			
+			// let currentPos = document.getElementById(cur);
+			let currentSelect = document.getElementById(cur);
+			// console.log(mySel)
+			let theCurrentMat = (currentSelect.options[ currentSelect.selectedIndex ].value);
+			for(let j = 0; j < myGWPMaterials.length; j++){
+				// console.log(e)
+				if(myGWPMaterials[j].material == theCurrentMat){
+					let myMult = myGWPMaterials[j].value
+					let num = parseInt(allLayers[i].variantArea)
+					console.log(myMult*num)
+					allLayers[i].variantGWP = (num * myMult).toFixed(2);
+					
+				}
+			}
+			}
+			
+			}
+			
+			
+				</script>
 
 		</div>
 
@@ -292,7 +381,7 @@ path:hover {
 				<td style="width:1px" :style="{ backgroundColor: variant.variantColor }"></td>
 				<td>{{ variant.variantId}}</td>
 				<td>
-				<select id="mat" name="mat">
+				<select v-bind:id="variant.variantId" name="mat" onChange="getData()">
           <option value="Granite">MV - Granite</option>
             <option value="Limestone">MV - Limestone</option>
             <option value="Brick">MV - Brick</option>
@@ -320,7 +409,7 @@ path:hover {
 
 				<td colspan="4">
 				<!-- <button>UPLOAD RHINO MODEL</button> -->
-				Total GWP: <strong>0.0</strong> kgCO<sub>2</sub>eq
+				Total GWP: <strong>{{ sum }}</strong> kgCO<sub>2</sub>eq
 				</td>
 			</tr>
 			
@@ -356,7 +445,7 @@ path:hover {
 			let container, controls;
 			let camera, scene, renderer;
 			let gui;
-			let allLayers = [];
+			
 			let allColors = [];
 			let allLayerAreas = [];
 
@@ -475,6 +564,12 @@ path:hover {
 
 				requestAnimationFrame( animate );
 
+	// 			if(prev != next){
+	// 	prev++;
+	// 	console.log(prev)
+	// 	updateData();
+	// }
+
 			}
 
 			function initGUI( layers ) {
@@ -561,7 +656,8 @@ path:hover {
 				allLayers.push({
 						variantId: layers[i].name,
 						variantColor: "rgb(" + layers[i].color.r + ", " + layers[i].color.g + ", " + layers[i].color.b +")",
-						variantArea: eachLayerArea.toFixed(2)
+						variantArea: eachLayerArea.toFixed(2), 
+						variantGWP: (eachLayerArea * 18.285).toFixed(2)
 					})
 
 
@@ -631,66 +727,182 @@ path:hover {
     // ],
 		// sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL']
 		sizes: allLayers
-  } 
-})
+  },computed: {
+        sum() {
+					let tot = 0;
+					for(let i = 0; i < this.variants.length; i++){
+						tot += parseInt(this.variants[i].variantGWP)
+					}
+            return tot 
+        }
+}})
+
+
+
+
+
+
 
 
 	// var data = [13, 21, 34, 55, 89,2];
-	var data = allLayerAreas
+	data = allLayers
 
 	// set the color scale
-var color1 = d3.scale.ordinal()
-.domain(data)
-// .range(["#B3B3B3", "#CCCCCC", "#4169E1", "#4169E3", "#C7E9B7", "#85E2BD"])
-.range(allColors)
 
-let mSpan = d3.select("span")
-let mSpanW = 500;
-	
-	var width = 280,
-			height = 280;
-	
-	var outerRadius = height / 2 - 20,
-			innerRadius = outerRadius / 3,
-			cornerRadius = 10;
-	
-	var pie = d3.layout.pie()
-			.padAngle(.01);
-	
-	var arc = d3.svg.arc()
-			.padRadius(outerRadius)
-			.innerRadius(innerRadius);
-	
-	var svg = d3.select("span").append("svg")
-			.attr("width", 300)
-			.attr("height", 300)
-		.append("g")
-			.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+	var alphabet = "abdef".split("");
 
-			function updateData() {
+    var margin = {top: 10, bottom: 10, left: 10, right: 10},
+      width = window.innerWidth - margin.left - margin.right,
+      height = window.innerHeight - margin.top - margin.bottom,
+      radius = 300/ 2;
 
-			svg.selectAll("path")
-				.data(pie(data))
-			.enter().append("path")
-				.each(function(d) { d.outerRadius = outerRadius - 10; })
-				.attr("d", arc)
-				.attr('fill', function(d){ return(color1(d.data)) })
-				.on("mouseover", arcTween(outerRadius, 0))
-				.on("mouseout", arcTween(outerRadius - 10, 150));
-			}
+    var svg = d3.select("span").append("svg")
+        .attr("width", 300)
+        .attr("height", 300)
+      .append("g")
+        .attr("transform", "translate(" + ((300 / 2) ) + "," + ((300 / 2) ) + ")");
+console.log(allColors)
+
+		// var color = d3.scaleOrdinal(["#b3b3b3", "#001488", "#4169e1", "#c7e9b7", "#85e2bd"])
+// 		var color = d3.scaleOrdinal()
+// 		// var color = d3.scaleBand()
+// .domain(allLayers)
+// .range([allColors])
+		
+		// var color = d3.scaleOrdinal(allColors)
+
+    var pie = d3.pie()
+        .sort(null)
+        .value(function(d) { return d.value; });
+
+    var arc = d3.arc()
+        .outerRadius(radius)
+        .innerRadius(radius-80);
+
+    redraw(randomData(allLayers));
+
+    d3.interval(function(){
+			data = allLayers
+      redraw(randomData(allLayers));  
+    }, 2000)
+
+    function redraw(data){
+
+      // join
+      var arcs = svg.selectAll(".arc")
+          .data(pie(data), function(d){ return d.data.name; });
+
+      // update
+      arcs 
+        .transition()
+          .duration(1500)
+          .attrTween("d", arcTween);
+
+      // enter
+      arcs.enter().append("path")
+        .attr("class", "arc")
+        .attr("fill", function(d) { return d.data.color; })
+        .attr("d", arc)
+        .each(function(d) { this._current = d; });
+
+    }
+
+    // Store the displayed angles in _current.
+    // Then, interpolate from _current to the new angles.
+    // During the transition, _current is updated in-place by d3.interpolate.
+    function arcTween(a) {
+      // console.log(this._current);
+      var i = d3.interpolate(this._current, a);
+      this._current = i(0);
+      return function(t) {
+        return arc(i(t));
+      };
+    }
+
+    function randomData(data){
+      return data.map(function(d){
+        return {
+          name: d.variantId,
+					value: d.variantGWP,
+					color: d.variantColor
+        }
+      });
+		}
+		
+		// function getData(){
+		// 	console.log(data)
+		// }
+
+
+// let mSpan = d3.select("span")
+// let mSpanW = 500;
 	
-	function arcTween(outerRadius, delay) {
-		return function() {
-			d3.select(this).transition().delay(delay).attrTween("d", function(d) {
-				var i = d3.interpolate(d.outerRadius, outerRadius);
-				return function(t) { d.outerRadius = i(t); return arc(d); };
-			});
-		};
-	}
+// 	var width = 280,
+// 			height = 280;
+	
+// 	var outerRadius = height / 2 - 20,
+// 			innerRadius = outerRadius / 3,
+// 			cornerRadius = 10;
+	
+// 	var pie = d3.layout.pie()
+// 			.padAngle(.01);
+	
+// 	var arc = d3.svg.arc()
+// 			.padRadius(outerRadius)
+// 			.innerRadius(innerRadius);
+	
+// 	var svg = d3.select("span").append("svg")
+// 			.attr("width", 300)
+// 			.attr("height", 300)
+// 		.append("g")
+// 			.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-	setTimeout(() => {  updateData(); console.log("World!"); }, 2000);
+// 			function updateData() {
+
+// 				var color1 = d3.scale.ordinal()
+// .domain(data)
+// .range(allColors)
+
+// // d3.select("span").remove("svg")
+
+// 				console.log(data)
+
+// 			svg.selectAll("path")
+// 				.data(pie(data))
+// 				.enter().append("path")
+// 				.each(function(d) { d.outerRadius = outerRadius - 10; })
+// 				.attr("d", arc)
+// 				.attr('fill', function(d){ return(color1(d.data)) })
+// 				.exit().remove();
+// 				// .on("mouseover", arcTween(outerRadius, 0))
+// 				// .on("mouseout", arcTween(outerRadius - 10, 150));
+
+// 				// svg.exit().remove()
+// 			}
+	
+// 	function arcTween(outerRadius, delay) {
+// 		return function() {
+// 			d3.select(this).transition().delay(delay).attrTween("d", function(d) {
+// 				var i = d3.interpolate(d.outerRadius, outerRadius);
+// 				return function(t) { d.outerRadius = i(t); return arc(d); };
+// 			});
+// 		};
+// 	}
+
+	
+
+
+	// setTimeout(() => {  
+	// 		getData();
+	// 		updateData(); 
+			
+	// 		 }, 2000);
+
+
 	
 	</script>
+
+
 
 		<script>
 			function readImage(file) {
