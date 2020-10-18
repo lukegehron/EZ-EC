@@ -176,15 +176,14 @@ body {
 }
 
 path {
-  fill: #ccc;
-  stroke: #333;
-  stroke-width: 1.5px;
+  /* fill: #ccc; */
+  stroke-width: none;
   transition: fill 250ms linear;
   transition-delay: 150ms;
 }
 
 path:hover {
-  fill: #999;
+  /* fill: #999; */
   stroke: #000;
   transition-delay: 0;
 }
@@ -298,9 +297,9 @@ path:hover {
 			<tr style="height: 300px;">
 
 				<td colspan="3" >
-					<div id="vizz" style="position: relative;width:100%;height:300px">
+					<span id="vizz" style="position: relative;width:100%;height:300px">
 
-					</div>
+					</span>
 					<!-- <img src="models/3dm/Pie.png" width="90%"> -->
 				</td>
 			</tr>
@@ -317,35 +316,42 @@ path:hover {
 
 		<script>
 
-			var data = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
+			var data = [13, 21, 34, 55, 89,2];
+
+			// set the color scale
+var color1 = d3.scale.ordinal()
+  .domain(data)
+  .range(["#B3B3B3", "#CCCCCC", "#4169E1", "#4169E3", "#C7E9B7", "#85E2BD"])
 			
-			var width = 300,
-					height = 300;
+			var width = 280,
+					height = 280;
 			
 			var outerRadius = height / 2 - 20,
 					innerRadius = outerRadius / 3,
 					cornerRadius = 10;
 			
 			var pie = d3.layout.pie()
-					.padAngle(.02);
+					.padAngle(.01);
 			
 			var arc = d3.svg.arc()
 					.padRadius(outerRadius)
 					.innerRadius(innerRadius);
 			
-			var svg = d3.select("body").append("svg")
+			var svg = d3.select("span").append("svg")
 					.attr("width", 300)
 					.attr("height", 300)
 				.append("g")
 					.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+					
 			
 			svg.selectAll("path")
 					.data(pie(data))
 				.enter().append("path")
-					.each(function(d) { d.outerRadius = outerRadius - 20; })
+					.each(function(d) { d.outerRadius = outerRadius - 10; })
 					.attr("d", arc)
+					.attr('fill', function(d){ return(color1(d.data)) })
 					.on("mouseover", arcTween(outerRadius, 0))
-					.on("mouseout", arcTween(outerRadius - 20, 150));
+					.on("mouseout", arcTween(outerRadius - 10, 150));
 			
 			function arcTween(outerRadius, delay) {
 				return function() {
