@@ -166,7 +166,7 @@ body {
   /* background: #eee; */
   min-height: 200vh;
 	/* box-sizing: border-box; */
-	padding-top: 10vh;
+	padding-top: 15vh;
   /* font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;  */
   font-weight: 300;
   line-height: 1.5;
@@ -197,7 +197,8 @@ path:hover {
 	
 			
 		<div id="info">
-			<h1 style="color:black">EZ-EC</h1>
+			<h1 style="color:black; font-size: 60px; top:20px; margin-top: 20px; line-height: .4em;">EZ-EC</h1>
+			<h2 style="color:black; font-size: 20px; top:20px; margin-top: 0px; line-height: .4em;">Embodied Carbon made Eazy</h2>
 
 			<!-- <div id="app"> -->
   
@@ -230,6 +231,7 @@ path:hover {
 
 			
 			 <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+			 <script src="//d3js.org/d3.v3.min.js"></script>
 
 		</div>
 
@@ -266,6 +268,7 @@ path:hover {
 				<td style="width:5px"></td>
 				<td>Layer Name</td>
 				<td>Assembly Type</td>
+				<td>Area</td>
 			</tr>
 			<tr v-for="variant in variants" 
 			:key="variant.variantId"
@@ -292,11 +295,14 @@ path:hover {
             <option value="Wood">RS - Wood</option>
 					</select>
 				</td>
+				<td>
+					{{variant.variantArea}} ft<sup>2</sup>
+				</td>
 			</tr>
 			
 			<tr style="height: 300px;">
 
-				<td colspan="3" >
+				<td colspan="4" >
 					<span id="vizz" style="position: relative;width:100%;height:300px">
 
 					</span>
@@ -305,64 +311,14 @@ path:hover {
 			</tr>
 			<tr style="height: 100px;">
 
-				<td colspan="3">
+				<td colspan="4">
 				<!-- <button>UPLOAD RHINO MODEL</button> -->
 				<input type="file" id="file-selector" accept=".jpg, .jpeg, .png">
 				</td>
 			</tr>
 		</table>
 
-		<script src="//d3js.org/d3.v3.min.js"></script>
-
-		<script>
-
-			var data = [13, 21, 34, 55, 89,2];
-
-			// set the color scale
-var color1 = d3.scale.ordinal()
-  .domain(data)
-  .range(["#B3B3B3", "#CCCCCC", "#4169E1", "#4169E3", "#C7E9B7", "#85E2BD"])
-			
-			var width = 280,
-					height = 280;
-			
-			var outerRadius = height / 2 - 20,
-					innerRadius = outerRadius / 3,
-					cornerRadius = 10;
-			
-			var pie = d3.layout.pie()
-					.padAngle(.01);
-			
-			var arc = d3.svg.arc()
-					.padRadius(outerRadius)
-					.innerRadius(innerRadius);
-			
-			var svg = d3.select("span").append("svg")
-					.attr("width", 300)
-					.attr("height", 300)
-				.append("g")
-					.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-					
-			
-			svg.selectAll("path")
-					.data(pie(data))
-				.enter().append("path")
-					.each(function(d) { d.outerRadius = outerRadius - 10; })
-					.attr("d", arc)
-					.attr('fill', function(d){ return(color1(d.data)) })
-					.on("mouseover", arcTween(outerRadius, 0))
-					.on("mouseout", arcTween(outerRadius - 10, 150));
-			
-			function arcTween(outerRadius, delay) {
-				return function() {
-					d3.select(this).transition().delay(delay).attrTween("d", function(d) {
-						var i = d3.interpolate(d.outerRadius, outerRadius);
-						return function(t) { d.outerRadius = i(t); return arc(d); };
-					});
-				};
-			}
-			
-			</script>
+		
 
 		<script type="module">
 
@@ -378,7 +334,7 @@ var color1 = d3.scale.ordinal()
 			let gui;
 			let allLayers = [];
 			let allColors = [];
-			
+			let allLayerAreas = [];
 
 			init();
 			animate();
@@ -440,7 +396,7 @@ var color1 = d3.scale.ordinal()
 					object.children.map(child => {
       // Access attributes from the Rhino document
 			let col = child.userData.attributes.drawColor;
-			console.log(child.userData.attributes.drawColor)
+			// console.log(child.userData.attributes.drawColor)
       let color = new THREE.Color(col.r/255, col.g/255, col.b/255);
 
       let mat = new THREE.MeshLambertMaterial( {
@@ -505,37 +461,30 @@ var color1 = d3.scale.ordinal()
 				
 
 				for ( let i = 0; i < layers.length; i ++ ) {
-					console.log(layers[i])
-					console.log( "rgb(" + layers[i].color.r + ", " + layers[i].color.g + ", " + layers[i].color.b +")")
+					// console.log(layers[i])
+					// console.log( "rgb(" + layers[i].color.r + ", " + layers[i].color.g + ", " + layers[i].color.b +")")
 					// allLayers.push(layers[i].name)
 
-					allLayers.push({
-						variantId: layers[i].name,
-						variantColor: "rgb(" + layers[i].color.r + ", " + layers[i].color.g + ", " + layers[i].color.b +")"
-					})
+					
 
 					const layer = layers[ i ];
-					layersControl.add( layer, 'visible' ).name( layer.name ).onChange( function ( val ) {
 
-						const name = this.object.name;
+					let eachLayerArea = 0;
 
-						scene.traverse( function ( child ) {
+					scene.traverse( function ( child ) {
 
-							if ( child.userData.hasOwnProperty( 'attributes' ) ) {
+					if ( child.userData.hasOwnProperty( 'attributes' ) ) {
 
-								if ( 'layerIndex' in child.userData.attributes ) {
+						if ( 'layerIndex' in child.userData.attributes ) {
 
-									const layerName = layers[ child.userData.attributes.layerIndex ].name;
+							const layerName = layers[ child.userData.attributes.layerIndex ].name;
+							// console.log(layerName)
 
-									if ( layerName === name ) {
+							if ( layerName === layer.name ) {
+								// console.log(layerName)
 
-										child.visible = val;
-										// console.log(child.children[0].geometry.attributes.position.array)
-										// console.log(child.children[0].geometry.index.array)
-										// console.log(child)
-
-										//CREATE ARRAY OF VECTOR3
-										let vector3Array = []
+								//CREATE ARRAY OF VECTOR3
+								let vector3Array = []
 										for(let i = 0; i < child.children[0].geometry.attributes.position.array.length/3; i++){
 											let myVectorArray = []
 											for(let j = 0; j<3; j++){
@@ -560,8 +509,61 @@ var color1 = d3.scale.ordinal()
 											var area = t.getArea();
 											// console.log("hi")
 											console.log(area)
+											eachLayerArea += area;
 
 										}
+							}
+						}
+					}
+					
+				});
+				allLayerAreas.push(eachLayerArea);
+
+				var rgbToHex = function (rgb) { 
+					var hex = Number(rgb). toString(16); 
+					if (hex. length < 2) { 
+						hex = "0" + hex; 
+					} return hex; 
+				};
+
+				let myCol = rgbToHex(layers[i].color.r)
+				myCol += rgbToHex(layers[i].color.g)
+				myCol += rgbToHex(layers[i].color.b)
+
+				allColors.push("#"+myCol);
+
+				allLayers.push({
+						variantId: layers[i].name,
+						variantColor: "rgb(" + layers[i].color.r + ", " + layers[i].color.g + ", " + layers[i].color.b +")",
+						variantArea: eachLayerArea.toFixed(2)
+					})
+
+
+
+
+
+
+					layersControl.add( layer, 'visible' ).name( layer.name ).onChange( function ( val ) {
+						console.log("does this run?")
+
+						const name = this.object.name;
+
+						scene.traverse( function ( child ) {
+
+							if ( child.userData.hasOwnProperty( 'attributes' ) ) {
+
+								if ( 'layerIndex' in child.userData.attributes ) {
+
+									const layerName = layers[ child.userData.attributes.layerIndex ].name;
+
+									if ( layerName === name ) {
+
+										child.visible = val;
+										// console.log(child.children[0].geometry.attributes.position.array)
+										// console.log(child.children[0].geometry.index.array)
+										// console.log(child)
+
+										
 										layer.visible = val;
 
 									}
@@ -574,10 +576,13 @@ var color1 = d3.scale.ordinal()
 
 					} );
 
+					
+
 				}
 
 				console.log(allLayers)
-
+				console.log(allLayerAreas)
+				console.log(allColors)
 			}
 
 			var app = new Vue({
@@ -602,7 +607,64 @@ var color1 = d3.scale.ordinal()
 		sizes: allLayers
   } 
 })
-		</script>
+
+
+	// var data = [13, 21, 34, 55, 89,2];
+	var data = allLayerAreas
+
+	// set the color scale
+var color1 = d3.scale.ordinal()
+.domain(data)
+// .range(["#B3B3B3", "#CCCCCC", "#4169E1", "#4169E3", "#C7E9B7", "#85E2BD"])
+.range(allColors)
+
+let mSpan = d3.select("span")
+let mSpanW = 500;
+	
+	var width = 280,
+			height = 280;
+	
+	var outerRadius = height / 2 - 20,
+			innerRadius = outerRadius / 3,
+			cornerRadius = 10;
+	
+	var pie = d3.layout.pie()
+			.padAngle(.01);
+	
+	var arc = d3.svg.arc()
+			.padRadius(outerRadius)
+			.innerRadius(innerRadius);
+	
+	var svg = d3.select("span").append("svg")
+			.attr("width", 300)
+			.attr("height", 300)
+		.append("g")
+			.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+			function updateData() {
+
+			svg.selectAll("path")
+				.data(pie(data))
+			.enter().append("path")
+				.each(function(d) { d.outerRadius = outerRadius - 10; })
+				.attr("d", arc)
+				.attr('fill', function(d){ return(color1(d.data)) })
+				.on("mouseover", arcTween(outerRadius, 0))
+				.on("mouseout", arcTween(outerRadius - 10, 150));
+			}
+	
+	function arcTween(outerRadius, delay) {
+		return function() {
+			d3.select(this).transition().delay(delay).attrTween("d", function(d) {
+				var i = d3.interpolate(d.outerRadius, outerRadius);
+				return function(t) { d.outerRadius = i(t); return arc(d); };
+			});
+		};
+	}
+
+	setTimeout(() => {  updateData(); console.log("World!"); }, 2000);
+	
+	</script>
 
 		<script>
 			function readImage(file) {
