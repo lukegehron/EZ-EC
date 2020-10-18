@@ -188,6 +188,19 @@ path:hover {
   transition-delay: 0;
 }
 
+.nav-bar {
+	position: absolute;
+	display: block;
+  background: linear-gradient(-90deg, #84CF6A, #16C0B0);
+  height: 80px;
+  /* margin-bottom: 15px; */
+	top:0;
+	left:0;
+	padding: 0;
+	margin: 0;
+	width: 100%;
+}
+
 
 
 		</style>
@@ -197,8 +210,11 @@ path:hover {
 	
 			
 		<div id="info">
-			<h1 style="color:black; font-size: 60px; top:20px; margin-top: 20px; line-height: .4em;">EZ-EC</h1>
-			<h2 style="color:black; font-size: 20px; top:20px; margin-top: 0px; line-height: .4em;">Embodied Carbon made Eazy</h2>
+			<div class="nav-bar">
+				<h1 style="color:white; font-size: 60px; top:30px; margin-top: 25px; line-height: .5em;">EZ-EC</h1>
+			</div>
+			
+			<h2 style="color:#333; font-size: 20px; margin-top:80px;">Embodied Carbon made Eazy</h2>
 
 			<!-- <div id="app"> -->
   
@@ -299,6 +315,14 @@ path:hover {
 					{{variant.variantArea}} ft<sup>2</sup>
 				</td>
 			</tr>
+
+			<tr style="height: 50px;">
+
+				<td colspan="4">
+				<!-- <button>UPLOAD RHINO MODEL</button> -->
+				Total GWP: <strong>0.0</strong> kgCO<sub>2</sub>eq
+				</td>
+			</tr>
 			
 			<tr style="height: 300px;">
 
@@ -354,7 +378,8 @@ path:hover {
 				// aspect = canvas.clientWidth / canvas.clientHeight;
 
 				camera = new THREE.PerspectiveCamera( 60, container.clientWidth / container.clientHeight, 1, 1000 );
-				camera.position.set( 26, - 40, 5 );
+				camera.position.set( -28, - 28, 31 );
+				
 
 				scene = new THREE.Scene();
 
@@ -446,6 +471,7 @@ path:hover {
 
 				controls.update();
 				renderer.render( scene, camera );
+				// console.log(camera.position)
 
 				requestAnimationFrame( animate );
 
