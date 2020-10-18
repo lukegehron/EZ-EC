@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - loaders - Rhino 3DM loader</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+
+		<style>
+			html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+	color:black;
+}
+
+body{
+  display: flex;
+	font-family: Arial, Helvetica, sans-serif;
+  /* flex-direction: column; */
+  background-color: #ffffff;
+}
+
+#c, #d, #e {
+  display: flex;
+
+  width: 100%;
+  /* height: 75%; */
+	/* width: 100%; */
+	height: 75vh;
+  /* margin: auto; */
+	/* margin-top: 9% */
+  /* margin-bottom: 3%; */
+
+  /* border-radius: 3px; */
+  /* box-shadow:  10px 10px 12px -4px rgba(0,0,0,0.35); */
+}
+
+table {
+  display: flex;
+	/* float: right ; */
+
+
+  width: 30%;
+  /* height: 15%; */
+  margin: auto;
+	/* margin-top: 9% */
+	margin-top:8vh;
+  /* margin-bottom: 3%; */
+
+  /* border-radius: 3px; */
+  /* box-shadow:  10px 10px 12px -4px rgba(0,0,0,0.35); */
+}
+
+td{
+	text-align: center;
+	padding: 3px 10px 3px 10px;
+}
+
+/* #globalDisplacement {
+  width: 50%;
+} */
+
+/* #screenshot {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  background-color:#1e88e5;
+  color:white;
+  box-shadow: 3px 3px 20px 0px rgba(0,0,0,0.5); 
+  border:none;
+  cursor: pointer;
+
+  display: flex;
+
+  transition: background-color 200ms ease-in-out, box-shadow 200ms ease-in-out;
+}
+
+#screenshot:hover {
+  background-color:#64b5f6;
+  box-shadow: 3px 3px 10px 0px rgba(0,0,0,0.75); 
+} */
+
+/* #controls {
+  margin: auto;
+  width: 75%;
+  margin-top: 0px;
+  display: flex;
+  justify-content: space-around;
+} */
+
+canvas:focus, input:focus, button:focus{
+  outline: none;
+}
+
+.tabs {
+	display: flex;
+	flex-wrap: wrap; 
+	max-height: 10px;
+	width: 65%;
+	margin: 5px;
+	/* border: 1px solid black; */
+}
+.tabs label {
+	z-index: 100;
+	order: 1;
+	display: block;
+	padding: 1rem 2rem;
+	margin-right: 0.2rem;
+	cursor: pointer;
+  background: #eee;
+	color: #333;
+  
+	border: 1px solid black;
+	border-bottom: white;
+	border-collapse: collapse;
+  /* transition: background ease 0.2s; */
+	border-radius: 5px 5px 0px 0px;
+}
+.tabs .tab {
+  order: 99;
+  /* flex-grow: 1; */
+	width: 100%;
+	border: 1px solid black;
+	/* border-top: none; */
+	border-collapse: collapse;
+	/* height: 95%; */
+	
+	display: none;
+  /* padding: 1rem; */
+  background: #fff;
+}
+.tabs input[type="radio"] {
+	display: none;
+	/* max-height: 10px; */
+}
+.tabs input[type="radio"]:checked + label {
+	background: #fff;
+	font-weight: bold;
+	color:black;
+	
+	margin-bottom: -1px;
+	/* height: 20px; */
+}
+.tabs input[type="radio"]:checked + label + .tab {
+	display: block;
+	
+}
+
+/* @media (max-width: 45em) {
+  .tabs .tab,
+  .tabs label {
+    order: initial;
+  }
+  .tabs label {
+    width: 100%;
+    margin-right: 0;
+    margin-top: 0.2rem;
+  }
+} */
+
+/**
+ * Generic Styling
+*/
+body {
+  /* background: #eee; */
+  min-height: 200vh;
+	/* box-sizing: border-box; */
+	padding-top: 10vh;
+  /* font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;  */
+  font-weight: 300;
+  line-height: 1.5;
+  /* max-width: 60rem; */
+  /* margin: 0 auto; */
+  /* font-size: 112%; */
+}
+
+
+
+		</style>
+	</head>
+
+	<body>
+		<div id="info">
+			<h1 style="color:black">EZ-EC</h1>
+
+			<!-- <div id="app"> -->
+  
+  <div class="product">
+
+
+    <!-- <div class="product-info">
+      <h1>{{ product }}</h1>
+      <p v-if="inStock">In Stock</p>
+      <p v-else>Out of Stock</p>
+
+      <ul>
+        <li v-for="detail in details">{{ detail }}</li>
+      </ul>
+
+      <ul>
+        <li v-for="size in sizes">{{ size }}</li>
+      </ul>
+
+
+      <div v-for="variant in variants" :key="variant.variantId">
+        <p>{{ variant.variantColor }}</p>
+      </div>
+
+    </div>   -->
+    
+  <!-- </div> -->
+  
+</div> 
+
+			
+			 <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+
+		</div>
+
+		<div class="tabs">
+			<input type="radio" name="tabs" id="tabone" checked="checked">
+			<label for="tabone">Option One</label>
+			<div class="tab">
+				<canvas id="c"></canvas>	
+			</div>
+			
+			<input type="radio" name="tabs" id="tabtwo">
+			<label for="tabtwo">Option Two</label>
+			<div class="tab">
+				<canvas id="d"></canvas>		
+			</div>
+			
+			<input type="radio" name="tabs" id="tabthree">
+			<label for="tabthree">Option Three</label>
+			<div class="tab">
+				<canvas id="e"></canvas>	
+			</div>
+		</div>
+		
+
+		<!-- <canvas id="c"></canvas> -->
+
+		
+		
+	
+	 
+		
+		<table id="app">
+			<tr style="	font-weight: bold;;">
+				<td style="width:5px"></td>
+				<td>Layer Name</td>
+				<td>Assembly Type</td>
+			</tr>
+			<tr v-for="variant in variants" 
+			:key="variant.variantId"
+			>
+				<td style="width:1px" :style="{ backgroundColor: variant.variantColor }"></td>
+				<td>{{ variant.variantId}}</td>
+				<td>
+				<select id="mat" name="mat">
+          <option value="Granite">MV - Granite</option>
+            <option value="Limestone">MV - Limestone</option>
+            <option value="Brick">MV - Brick</option>
+            <option value="InsMetPanel">FS - Metal Panel</option>
+            <option value="Spandrel">CW - Spandrel</option>
+            <option value="UHPC">RS - UHPC (fibreC)</option>
+            <option value="GFRC">RS - GFRC</option>
+            <option value="ACM">RS - ACM</option>
+            <option value="Terracotta">RS - Terracotta</option>
+            <option value="PhenResin">RS - Phenolic Resin</option>
+            <option value="FiberCement">RS - Fiber Cement</option>
+            <option value="Zinc">RS - Zinc Panel</option>
+            <option value="Granite1">RS - Granite</option>
+            <option value="Limestone1">RS - Limestone</option>
+            <option value="Steel">RS - Steel Panel</option>
+            <option value="Wood">RS - Wood</option>
+					</select>
+				</td>
+			</tr>
+			
+			<tr style="height: 300px;">
+
+				<td colspan="3">
+					<img src="models/3dm/Pie.png" width="90%">
+				</td>
+			</tr>
+			<tr style="height: 100px;">
+
+				<td colspan="3">
+				<!-- <button>UPLOAD RHINO MODEL</button> -->
+				<input type="file" id="file-selector" accept=".jpg, .jpeg, .png">
+				</td>
+			</tr>
+		</table>
+
+		<script type="module">
+
+			import * as THREE from './build/three.module.js';
+
+			import { OrbitControls } from './jsm/controls/OrbitControls.js';
+			import { Rhino3dmLoader } from './jsm/loaders/3DMLoader.js';
+
+			import { GUI } from './jsm/libs/dat.gui.module.js';
+
+			let container, controls;
+			let camera, scene, renderer;
+			let gui;
+			let allLayers = [];
+			let allColors = [];
+			
+
+			init();
+			animate();
+
+			function init() {
+
+				
+
+				THREE.Object3D.DefaultUp = new THREE.Vector3( 0, 0, 1 );
+				// container = document.createElement( 'div' );
+				// container = document.querySelector('#c');
+				container = document.getElementById( 'c' );
+				// document.body.appendChild( container );
+
+				// renderer = new THREE.WebGLRenderer( { canvas: container, antialias: true } );
+
+				// aspect = canvas.clientWidth / canvas.clientHeight;
+
+				camera = new THREE.PerspectiveCamera( 60, container.clientWidth / container.clientHeight, 1, 1000 );
+				camera.position.set( 26, - 40, 5 );
+
+				scene = new THREE.Scene();
+
+				scene.background = new THREE.Color( 0xffffff );
+
+				const directionalLight = new THREE.DirectionalLight( 0xffffff );
+				directionalLight.position.set( .2, 1, 2 );
+				directionalLight.castShadow = true;
+				directionalLight.intensity = 0.3;
+				scene.add( directionalLight );
+
+				const directionalLight2 = new THREE.DirectionalLight( 0xffffff );
+				directionalLight2.position.set( -1, -.2, 2 );
+				directionalLight2.castShadow = true;
+				directionalLight2.intensity = 0.2;
+				scene.add( directionalLight2 );
+
+
+				let hemiLight = new THREE.HemisphereLight( 0xffffff, 0x080808, 0.75 );
+    hemiLight.position.set( 0, 0, 400 );
+		scene.add( hemiLight );
+		
+		scene.add( new THREE.AmbientLight( 0xffffff, 0.125 ) );
+
+				// sceneBox = new THREE.Box3();
+
+				const loader = new Rhino3dmLoader();
+				loader.setLibraryPath( 'jsm/libs/rhino3dm/' );
+
+				loader.load( 'models/3dm/Tower4.3dm', function ( object ) {
+
+					// sceneBox.setFromObject(object);
+    // let boxHelper = new THREE.Box3Helper(sceneBox, 0x0000ff);
+    // scene.add(boxHelper);
+
+    // Name to identify rhino object node
+    object.name = 'rhinoDoc';
+
+					object.children.map(child => {
+      // Access attributes from the Rhino document
+			let col = child.userData.attributes.drawColor;
+			console.log(child.userData.attributes.drawColor)
+      let color = new THREE.Color(col.r/255, col.g/255, col.b/255);
+
+      let mat = new THREE.MeshLambertMaterial( {
+        color: color,
+      } );
+        
+        // Set mesh material
+				child.material = mat;
+		});
+      
+
+					scene.add( object );
+					initGUI( object.userData.layers );
+
+				} );
+
+				// const width = window.innerWidth;
+				// const height = window.innerHeight;
+
+				// renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer = new THREE.WebGLRenderer( { canvas: container, antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( container.clientWidth,  container.clientHeight );
+				// container.appendChild( renderer.domElement );
+
+				controls = new OrbitControls( camera, container );
+
+				window.addEventListener( 'resize', resize, false );
+
+			}
+
+			function resize() {
+
+				// const width = window.innerWidth;
+				// const height = window.innerHeight;
+				const width = container.clientWidth*.5;
+				const heigth = container.clientHeigth
+
+				camera.aspect = width / height;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( width, height );
+
+			}
+
+			function animate() {
+
+				controls.update();
+				renderer.render( scene, camera );
+
+				requestAnimationFrame( animate );
+
+			}
+
+			function initGUI( layers ) {
+
+				gui = new GUI( { width: 300 } );
+				const layersControl = gui.addFolder( 'layers' );
+				// layersControl.open();
+				gui.hide();
+
+				
+
+				for ( let i = 0; i < layers.length; i ++ ) {
+					console.log(layers[i])
+					console.log( "rgb(" + layers[i].color.r + ", " + layers[i].color.g + ", " + layers[i].color.b +")")
+					// allLayers.push(layers[i].name)
+
+					allLayers.push({
+						variantId: layers[i].name,
+						variantColor: "rgb(" + layers[i].color.r + ", " + layers[i].color.g + ", " + layers[i].color.b +")"
+					})
+
+					const layer = layers[ i ];
+					layersControl.add( layer, 'visible' ).name( layer.name ).onChange( function ( val ) {
+
+						const name = this.object.name;
+
+						scene.traverse( function ( child ) {
+
+							if ( child.userData.hasOwnProperty( 'attributes' ) ) {
+
+								if ( 'layerIndex' in child.userData.attributes ) {
+
+									const layerName = layers[ child.userData.attributes.layerIndex ].name;
+
+									if ( layerName === name ) {
+
+										child.visible = val;
+										// console.log(child.children[0].geometry.attributes.position.array)
+										// console.log(child.children[0].geometry.index.array)
+										// console.log(child)
+
+										//CREATE ARRAY OF VECTOR3
+										let vector3Array = []
+										for(let i = 0; i < child.children[0].geometry.attributes.position.array.length/3; i++){
+											let myVectorArray = []
+											for(let j = 0; j<3; j++){
+												myVectorArray.push(child.children[0].geometry.attributes.position.array[i*3 + j])
+											}
+											var a = new THREE.Vector3( myVectorArray[0], myVectorArray[1], myVectorArray[2] );
+											vector3Array.push(a)
+										}
+
+				
+										//CREATE FACE ARRAY
+										// console.log((child.children[0].geometry.index.array.length)/3)
+
+										for(let i = 0; i < child.children[0].geometry.index.array.length/3; i++){
+
+											let myFaceArray = []
+											for(let j = 0; j<3; j++){
+												myFaceArray.push(child.children[0].geometry.index.array[i*3 + j])
+												
+											}
+											var t = new THREE.Triangle(vector3Array[myFaceArray[0]],vector3Array[myFaceArray[1]],vector3Array[myFaceArray[2]]);
+											var area = t.getArea();
+											// console.log("hi")
+											console.log(area)
+
+										}
+										layer.visible = val;
+
+									}
+
+								}
+
+							}
+
+						} );
+
+					} );
+
+				}
+
+				console.log(allLayers)
+
+			}
+
+			var app = new Vue({
+  el: '#app',
+  data: {
+    product: 'Socks',
+    image: 'https://www.vuemastery.com/images/challenges/vmSocks-green-onWhite.jpg',
+    inStock: true,
+    details: ['80% cotton', '20% polyester', 'Gender-neutral'],
+    variants: allLayers,
+		// variants: [
+    //   {
+    //     variantId: 2234,
+    //     variantColor: 'green'    
+    //   },
+    //   {
+    //     variantId: 2235,
+    //     variantColor: 'blue'
+    //   }
+    // ],
+		// sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL']
+		sizes: allLayers
+  } 
+})
+		</script>
+
+		<script>
+			function readImage(file) {
+  // Check if the file is an image.
+  if (file.type && file.type.indexOf('image') === -1) {
+    console.log('File is not an image.', file.type, file);
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.addEventListener('load', (event) => {
+    img.src = event.target.result;
+  });
+  reader.readAsDataURL(file);
+}
+		</script>
+
+	</body>
+</html>
