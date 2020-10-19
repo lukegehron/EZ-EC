@@ -1,0 +1,3 @@
+# EZ-EC
+
+EZ-EC (Easy Embodied Carbon) is a web application that can be used by AEC professionals to get quick estimates of embodied carbon performance of building designs in early project phases. As a user, you provide details about the land lot, massing geometry, structural system and façade. As a response, you get the GWPs (Global Warming Potentials) of the different components of the building (façade, floor, columns etc.), including a visualization of the geometry. The hope is that this tool can be used to make informed decisions in early stages, as the structural system and the cladding make up roughly 70% of the embodied carbon of a building. To be able to meet the goals of the Paris agreement, it’s about time that we as an industry start to take action.
