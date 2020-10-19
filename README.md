@@ -10,7 +10,8 @@ EZ-EC was developed during the AEC Tech 2020 hackathon by the following team:
 - Patryk Wozniczka (Entuitive)
 - Brittney Holmes (HMC Architects)
 - Chris Hazel (Ayers Saint Gross Architects)
-- Luke Lombardi (Thornton Tomasetti). 
+- Luke Lombardi (Thornton Tomasetti)
+- Emil Poulsen (Thornton Tomasetti) 
 
 This project won the prize for “Best Overall Hack”.
 
