@@ -1,4 +1,8 @@
+let allModels = [];
+let currentModel = 0;
 let allLayers = [];
+
+allModels.push(allLayers)
 
 let myGWPMaterials = [
   {
@@ -78,19 +82,26 @@ let prev = 0;
 let next = 0;
 
 function getData() {
-  for (let i = 0; i < allLayers.length; i++) {
-    let cur = allLayers[i].variantId;
+  // vm.$forceUpdate();
+  // currentModel = 0;
+  // allLayers = allModels[currentModel];
+  allLayers = [];
+
+  for(let i = 0; i < allModels[currentModel].length; i++){
+    allLayers.push(allModels[currentModel][i])
+  }
+  for (let i = 0; i < allModels[currentModel].length; i++) {
+    let cur = allModels[currentModel][i].variantId;
     let currentSelect = document.getElementById(cur);
     let theCurrentMat = (currentSelect.options[currentSelect.selectedIndex].value);
     for (let j = 0; j < myGWPMaterials.length; j++) {
       if (myGWPMaterials[j].material == theCurrentMat) {
         let myMult = myGWPMaterials[j].value
-        let num = parseInt(allLayers[i].variantArea)
+        let num = parseInt(allModels[currentModel][i].variantArea)
         console.log(myMult * num)
-        allLayers[i].variantGWP = (num * myMult).toFixed(2);
+        allModels[currentModel][i].variantGWP = (num * myMult).toFixed(2);
 
       }
     }
   }
-
 }

@@ -57,7 +57,7 @@
 		</tr>
 		<tr v-for="variant in variants" :key="variant.variantId">
 			<td style="width:1px" :style="{ backgroundColor: variant.variantColor }"></td>
-			<td>{{ variant.variantId}}</td>
+			<td >{{ variant.variantId}}</td>
 			<td>
 				<select v-bind:id="variant.variantId" name="mat" onChange="getData()">
 					<option value="Granite">MV - Granite</option>
@@ -93,7 +93,7 @@
 		<tr style="height: 50px;">
 
 			<td colspan="4">
-				<!-- <button>UPLOAD RHINO MODEL</button> -->
+				<!-- <button v-on:click="refresh">UPLOAD RHINO MODEL</button> -->
 				Total GWP: <strong>{{ sum }}</strong> kgCO<sub>2</sub>eq
 			</td>
 		</tr>

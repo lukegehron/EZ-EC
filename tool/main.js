@@ -3,11 +3,11 @@ import * as THREE from '../build/three.module.js';
 import { OrbitControls } from './jsm/controls/OrbitControls.js';
 import { Rhino3dmLoader } from './jsm/loaders/3DMLoader.js';
 
-import { GUI } from './jsm/libs/dat.gui.module.js';
+// import { GUI } from './jsm/libs/dat.gui.module.js';
 
 let container, controls;
 let camera, scene, renderer;
-let gui;
+// let gui;
 
 let allColors = [];
 let allLayerAreas = [];
@@ -69,18 +69,16 @@ function init() {
       let mat = new THREE.MeshLambertMaterial({
         color: color,
       });
-      // Set mesh material
       child.material = mat;
-      child.layers.set(1)
     });
     object.traverse(function (obj) {
       obj.layers.set(1);
     });
-    object.layers.set(1);
     scene.add(object);
     // initGUI( object.userData.layers );
 
-    initGUI(object.userData.layers);
+    // initGUI(object.userData.layers);
+    extractDataToObject(object.userData.layers)
   });
 
   loader.load('models/3dm/RhinoTemplate7.3dm', function (object) {
@@ -92,23 +90,19 @@ function init() {
     object.children.map(child => {
       // Access attributes from the Rhino document
       let col = child.userData.attributes.drawColor;
-      // console.log(child.userData.attributes.drawColor)
       let color = new THREE.Color(col.r / 255, col.g / 255, col.b / 255);
       let mat = new THREE.MeshLambertMaterial({
         color: color,
       });
-      // Set mesh material
       child.material = mat;
-      child.layers.set(2)
-      // scene.add(child)
     });
 
     object.traverse(function (obj) {
       obj.layers.set(2);
     });
-    object.layers.set(2);
     scene.add(object);
     // initGUI( object.userData.layers );
+    extractDataToObject(object.userData.layers)
   });
 
   loader.load('models/3dm/RhinoTemplate8.3dm', function (object) {
@@ -120,22 +114,18 @@ function init() {
     object.children.map(child => {
       // Access attributes from the Rhino document
       let col = child.userData.attributes.drawColor;
-      // console.log(child.userData.attributes.drawColor)
       let color = new THREE.Color(col.r / 255, col.g / 255, col.b / 255);
       let mat = new THREE.MeshLambertMaterial({
         color: color,
       });
-      // Set mesh material
       child.material = mat;
-      child.layers.set(3)
-      // scene.add(child)
     });
 
     object.traverse(function (obj) {
       obj.layers.set(3);
     });
-    object.layers.set(3);
     scene.add(object);
+    extractDataToObject(object.userData.layers)
   });
 
   renderer = new THREE.WebGLRenderer({ canvas: container, antialias: true });
@@ -169,16 +159,43 @@ function animate() {
   controls.update();
   renderer.render(scene, camera);
   // console.log(camera.position)
+  // console.log(allLayers)
 
   requestAnimationFrame(animate);
 }
 
-function initGUI(layers) {
+// function initGUI(layers) {
 
-  gui = new GUI({ width: 300 });
-  const layersControl = gui.addFolder('layers');
-  // layersControl.open();
-  gui.hide();
+//   gui = new GUI({ width: 300 });
+//   const layersControl = gui.addFolder('layers');
+//   // layersControl.open();
+//   gui.hide();
+
+//   for (let i = 0; i < layers.length; i++) {
+//     const layer = layers[i];
+    
+//     layersControl.add(layer, 'visible').name(layer.name).onChange(function (val) {
+//       const name = this.object.name;
+//       scene.traverse(function (child) {
+//         if (child.userData.hasOwnProperty('attributes')) {
+//           if ('layerIndex' in child.userData.attributes) {
+//             const layerName = layers[child.userData.attributes.layerIndex].name;
+//             if (layerName === name) {
+//               child.visible = val;
+//               layer.visible = val;
+//             }
+//           }
+//         }
+//       });
+//     });
+//   }
+// }
+
+function extractDataToObject(layers) {
+
+  let myObject;
+  // allLayers = [];
+  let tempLayers = [];
 
   for (let i = 0; i < layers.length; i++) {
     const layer = layers[i];
@@ -232,28 +249,35 @@ function initGUI(layers) {
 
     allColors.push("#" + myCol);
 
-    allLayers.push({
+    if(currentModel == 0){
+      allLayers.push({
+        variantId: layers[i].name,
+        variantColor: "rgb(" + layers[i].color.r + ", " + layers[i].color.g + ", " + layers[i].color.b + ")",
+        variantArea: eachLayerArea.toFixed(2),
+        variantGWP: (eachLayerArea * 18.285).toFixed(2)
+      })
+    }
+
+    
+
+    tempLayers.push({
       variantId: layers[i].name,
       variantColor: "rgb(" + layers[i].color.r + ", " + layers[i].color.g + ", " + layers[i].color.b + ")",
       variantArea: eachLayerArea.toFixed(2),
       variantGWP: (eachLayerArea * 18.285).toFixed(2)
     })
 
-    layersControl.add(layer, 'visible').name(layer.name).onChange(function (val) {
-      const name = this.object.name;
-      scene.traverse(function (child) {
-        if (child.userData.hasOwnProperty('attributes')) {
-          if ('layerIndex' in child.userData.attributes) {
-            const layerName = layers[child.userData.attributes.layerIndex].name;
-            if (layerName === name) {
-              child.visible = val;
-              layer.visible = val;
-            }
-          }
-        }
-      });
-    });
+   
+
   }
+
+  allModels[currentModel] = tempLayers;
+  currentModel++;
+  if(currentModel >=3){
+    currentModel = 0;
+  }
+
+  // allLayers = allModels[0];
   // console.log(allLayers)
   // console.log(allLayerAreas)
   // console.log(allColors)
@@ -262,13 +286,9 @@ function initGUI(layers) {
 var app = new Vue({
   el: '#app',
   data: {
-    product: 'Socks',
-    image: 'https://www.vuemastery.com/images/challenges/vmSocks-green-onWhite.jpg',
-    inStock: true,
-    details: ['80% cotton', '20% polyester', 'Gender-neutral'],
-    variants: allLayers,
-
-    sizes: allLayers
+    variants: allModels[currentModel],
+    sizes: allModels[currentModel],
+    componentKey: 0
   }, computed: {
     sum() {
       let tot = 0;
@@ -277,6 +297,16 @@ var app = new Vue({
       }
       return tot
     }
+  },
+  methods: {
+    forceRerender() {
+      this.componentKey += 1;
+      this.variants = allModels[currentModel];
+    },
+    refresh(){
+      console.log("update")
+      this.forceRerender();
+    }
   }
 })
 
@@ -284,26 +314,57 @@ document.getElementById("myBtn").addEventListener("click", function () {
   camera.layers.enable(1);
   camera.layers.disable(2);
   camera.layers.disable(3);
+
+  currentModel = 0;
+  allLayers = [];
+
+  for(let i = 0; i < allModels[currentModel].length; i++){
+    allLayers.push(allModels[currentModel][i])
+  }
+  app.forceRerender();
+  getData();
+  // vm.$forceUpdate();
+  // Vue.forceUpdate();
 });
 
 document.getElementById("myBtn2").addEventListener("click", function () {
   camera.layers.disable(1);
   camera.layers.enable(2);
   camera.layers.disable(3);
+
+  currentModel = 1;
+  allLayers = [];
+
+  for(let i = 0; i < allModels[currentModel].length; i++){
+    allLayers.push(allModels[currentModel][i])
+  }
+  app.forceRerender();
+  getData();
+  // vm.$forceUpdate();
+  
 });
 
 document.getElementById("myBtn3").addEventListener("click", function () {
   camera.layers.disable(1);
   camera.layers.disable(2);
   camera.layers.enable(3);
+
+  currentModel = 2;
+  allLayers = [];
+
+  for(let i = 0; i < allModels[currentModel].length; i++){
+    allLayers.push(allModels[currentModel][i])
+  }
+  app.forceRerender();
+  getData();
+  // vm.$forceUpdate();
+  // Vue.forceUpdate();
 });
 
 
 data = allLayers
 
 // set the color scale
-
-var alphabet = "abdef".split("");
 
 var margin = { top: 10, bottom: 10, left: 10, right: 10 },
   width = window.innerWidth - margin.left - margin.right,
@@ -367,6 +428,7 @@ function arcTween(a) {
 
 function randomData(data) {
   return data.map(function (d) {
+
     return {
       name: d.variantId,
       value: d.variantGWP,
